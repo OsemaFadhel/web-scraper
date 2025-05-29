@@ -99,12 +99,50 @@ class WebScraper:
 		except IOError as e:
 			print(f"Error saving data to JSON: {e}")
 
+	def choice_save(self, data):
+		"""Prompt user to save data to JSON file."""
+		save_choice = input(bcolors.OKGREEN + "Do you want to save the extracted data to a JSON file? (y/n): " + bcolors.ENDC).strip().lower()
+		if save_choice == 'y':
+			filename = input(bcolors.OKGREEN + "Enter the filename (default: output.json): " + bcolors.ENDC).strip() or "output.json"
+			self.save_to_json(data, filename)
+		else:
+			print("Data not saved.")
+
 	def run(self):
 		print(header)
 		while True:
 			print(options)
-			choice = input("Choose an option (1 or 2, or 'q' to quit): ").strip()
-
+			try:
+				choice = input(bcolors.OKGREEN + "Choose an option (1 or 2, or 'q' to quit): "  + bcolors.ENDC).strip()
+				if choice == '1':
+					url = input(bcolors.OKGREEN + "Enter the URL: " + bcolors.ENDC).strip()
+					css_selector = input(bcolors.OKGREEN + "Enter the CSS selector: " + bcolors.ENDC).strip()
+					elements = self.extract_elements(url, css_selector)
+					if elements:
+						print(f"Extracted {len(elements)} elements:")
+						for element in elements:
+							print(element)
+						self.choice_save(elements)
+					else:
+						print("No elements found or an error occurred.")
+				elif choice == '2':
+					url = input(bcolors.OKGREEN + "Enter the URL: " + bcolors.ENDC).strip()
+					links = self.extract_links(url)
+					if links:
+						print(f"Extracted {len(links)} links:")
+						for link in links:
+							print(link)
+						self.choice_save(links)
+					else:
+						print("No links found or an error occurred.")
+				elif choice.lower() == 'q':
+					print("Exiting the scraper. Goodbye!")
+					sys.exit(0)
+				else:
+					print("Invalid option. Please try again.")
+			except KeyboardInterrupt:
+				print("\nExiting the scraper. Goodbye!")
+				sys.exit(0)
 
 def main():
 	app = WebScraper()

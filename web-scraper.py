@@ -23,7 +23,13 @@ header = (
 options = (
 	bcolors.OKBLUE + "1. Extract elements by CSS selector\n"
 	+ bcolors.OKCYAN + "2. Extract all links from a page\n"
+	+ bcolors.OKGREEN + "3. Extract emails from a page\n"
+	+ bcolors.WARNING + "q. Quit\n"
 	+ bcolors.ENDC
+)
+
+url_input = (
+	bcolors.OKGREEN + "Enter the URL of the page to scrape: " + bcolors.ENDC
 )
 
 class WebScraper:
@@ -50,17 +56,24 @@ class WebScraper:
 			print(f"Error parsing HTML content: {e}")
 			return None
 
+	def fetch_and_parse(self, url):
+		"""Fetch and parse the HTML content of a URL."""
+		html_content = self.fetch_page(url)
+		if html_content is None:
+			print("Unable to retrieve the page content.")
+			return None
+
+		soup = self.parse_html(html_content)
+		if soup is None:
+			print("Unable to parse HTML content.")
+			return None
+
+		return soup
+
 	def extract_elements(self, url, css_selector):
 		try:
-			html_content = self.fetch_page(url)
-			if html_content is None:
-				print("Unable to retrieve the page content.")
-				return []
-
-			# Parse the HTML content
-			soup = self.parse_html(html_content)
+			soup = self.fetch_and_parse(url)
 			if soup is None:
-				print("Unable to parse HTML content.")
 				return []
 
 			elements = soup.select(css_selector)
@@ -71,14 +84,8 @@ class WebScraper:
 
 	def extract_links(self, url):
 		try:
-			html_content = self.fetch_page(url)
-			if html_content is None:
-				print("Unable to retrieve the page content.")
-				return []
-
-			soup = self.parse_html(html_content)
+			soup = self.fetch_and_parse(url)
 			if soup is None:
-				print("Unable to parse HTML content.")
 				return []
 
 			links = soup.find_all('a', href=True)
@@ -86,10 +93,43 @@ class WebScraper:
 				link['href'] = requests.compat.urljoin(url, link['href'])
 			print(f"Found {len(links)} links on the page.")
 			return [link['href'] for link in links]
-
 		except Exception as e:
 			print(f"Error extracting links: {e}")
 			return []
+
+	def extract_emails(self, url):
+		try:
+			soup = self.fetch_and_parse(url)
+			if soup is None:
+				return []
+
+			emails = set()
+			for a in soup.find_all('a', href=True):
+				if 'mailto:' in a['href']:
+					email = a['href'].split('mailto:')[1]
+					emails.add(email)
+
+			print(f"Found {len(emails)} emails on the page.")
+			return list(emails)
+		except Exception as e:
+			print(f"Error extracting emails: {e}")
+			return []
+
+	def generate_sitemap(self, links, filename="sitemap.xml"):
+		"""Generate a sitemap from the provided links and save it to a file."""
+		try:
+			# Create the XML structure for the sitemap
+			urlset = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n"
+			for link in links:
+				urlset += f"  <url>\n    <loc>{link}</loc>\n  </url>\n"
+			urlset += "</urlset>\n"
+
+			# Save the sitemap to a file
+			with open(filename, "w", encoding="utf-8") as f:
+				f.write(urlset)
+			print(f"Sitemap saved to {filename}")
+		except IOError as e:
+			print(f"Error saving sitemap: {e}")
 
 	def save_to_json(self, data, filename):
 		try:
@@ -108,36 +148,69 @@ class WebScraper:
 		else:
 			print("Data not saved.")
 
+	def handle_extract_elements(self):
+		url = input(url_input).strip()
+		css_selector = input(bcolors.OKGREEN + "Enter the CSS selector: " + bcolors.ENDC).strip()
+		elements = self.extract_elements(url, css_selector)
+		if elements:
+			print(f"Extracted {len(elements)} elements:")
+			for element in elements:
+				print(element)
+			self.choice_save(elements)
+		else:
+			print("No elements found or an error occurred.")
+
+	def handle_extract_links(self):
+		url = input(url_input).strip()
+		links = self.extract_links(url)
+		if links:
+			print(f"Extracted {len(links)} links:")
+			for link in links:
+				print(link)
+			self.choice_save(links)
+		else:
+			print("No links found or an error occurred.")
+
+	def handle_extract_emails(self):
+		url = input(url_input).strip()
+		emails = self.extract_emails(url)
+		if emails:
+			print(f"Extracted {len(emails)} emails:")
+			for email in emails:
+				print(email)
+			self.choice_save(emails)
+		else:
+			print("No emails found or an error occurred.")
+
+	def handle_generate_sitemap(self):
+		"""Prompt user to generate a sitemap from extracted links."""
+		url = input(bcolors.OKGREEN + "Enter the URL of the page to scrape links for sitemap: " + bcolors.ENDC).strip()
+		links = self.extract_links(url)
+		if links:
+			print(f"Extracted {len(links)} links for the sitemap.")
+			filename = input(bcolors.OKGREEN + "Enter the filename for the sitemap (default: sitemap.xml): " + bcolors.ENDC).strip() or "sitemap.xml"
+			self.generate_sitemap(links, filename)
+		else:
+			print("No links found or an error occurred.")
+
 	def run(self):
 		print(header)
+
+		choice_actions = {
+			'1': self.handle_extract_elements,
+			'2': self.handle_extract_links,
+			'3': self.handle_extract_emails
+		}
+
 		while True:
 			print(options)
 			try:
-				choice = input(bcolors.OKGREEN + "Choose an option (1 or 2, or 'q' to quit): "  + bcolors.ENDC).strip()
-				if choice == '1':
-					url = input(bcolors.OKGREEN + "Enter the URL: " + bcolors.ENDC).strip()
-					css_selector = input(bcolors.OKGREEN + "Enter the CSS selector: " + bcolors.ENDC).strip()
-					elements = self.extract_elements(url, css_selector)
-					if elements:
-						print(f"Extracted {len(elements)} elements:")
-						for element in elements:
-							print(element)
-						self.choice_save(elements)
-					else:
-						print("No elements found or an error occurred.")
-				elif choice == '2':
-					url = input(bcolors.OKGREEN + "Enter the URL: " + bcolors.ENDC).strip()
-					links = self.extract_links(url)
-					if links:
-						print(f"Extracted {len(links)} links:")
-						for link in links:
-							print(link)
-						self.choice_save(links)
-					else:
-						print("No links found or an error occurred.")
-				elif choice.lower() == 'q':
+				choice = input(bcolors.OKGREEN + "Choose an option (1 or 2, or 'q' to quit): " + bcolors.ENDC).strip()
+				if choice.lower() == 'q':
 					print("Exiting the scraper. Goodbye!")
 					sys.exit(0)
+				elif choice in choice_actions:
+					choice_actions[choice]()
 				else:
 					print("Invalid option. Please try again.")
 			except KeyboardInterrupt:

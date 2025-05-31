@@ -87,11 +87,11 @@ The scraper uses a default User-Agent string that can be customized in the [`Web
 ## 🚀 Planned Features
 
 ### **High Priority**
-- [ ] **Email Address Extraction** - Extract email addresses from web pages
+- [-] **Email Address Extraction** - Extract email addresses from web pages
 - [ ] **Image URL Extraction** - Download and extract image URLs
 - [ ] **Table Data Extraction** - Parse HTML tables into structured data
 - [ ] **Form Detection** - Identify and analyze web forms
-- [ ] **Sitemap Generation** - Generate sitemaps from crawled links
+- [-] **Sitemap Generation** - Generate sitemaps from crawled links
 
 ### **Enhanced Functionality**
 - [ ] **Multi-threading** - Concurrent page processing for faster scraping

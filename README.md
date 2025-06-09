@@ -1,6 +1,6 @@
 # Web Scraper
 
-A modular and extensible Python web scraper for extracting data from web pages using the Strategy Design Pattern.
+A modular and extensible Python web scraper for extracting data from web pages.
 
 ![Python](https://img.shields.io/badge/python-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
@@ -11,16 +11,10 @@ A modular and extensible Python web scraper for extracting data from web pages u
 ### **Current Features**
 - **CSS Selector Extraction**: Extract specific elements using CSS selectors
 - **Link Extraction**: Extract all links from web pages with automatic URL resolution
+- **Image Extraction**: Extract images and their URLs
+- **Email Extraction**: Find and extract email addresses from web pages
 - **Sitemap Generation**: Generate XML sitemaps from crawled links
 - **Session Management**: Persistent HTTP sessions with custom User-Agent
-- **Error Handling**: Robust error handling for network and parsing issues
-
-### **Built-in Capabilities**
-- Modular design with the Strategy Design Pattern
-- Automatic relative URL resolution
-- HTTP error handling with proper status codes
-- HTML parsing with BeautifulSoup4
-- UTF-8 encoding support for international content
 
 ## 📋 Requirements
 
@@ -32,7 +26,7 @@ A modular and extensible Python web scraper for extracting data from web pages u
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/web-scraper.git
+   git clone https://github.com/OsemaFadhel/web-scraper.git
    cd web-scraper
    ```
 
@@ -52,34 +46,7 @@ A modular and extensible Python web scraper for extracting data from web pages u
 Run the script and choose from available options:
 
 ```bash
-python web-scraper.py
-```
-
-**Available Options:**
-1. **Extract elements by CSS selector** - Target specific HTML elements
-2. **Extract all links from a page** - Get all hyperlinks with resolved URLs
-3. **Generate sitemap** - Create an XML sitemap from extracted links
-
-### **Basic Examples**
-
-```python
-from web_scraper import ElementExtractor, LinkExtractor, SitemapGenerator
-import requests
-
-session = requests.Session()
-session.headers.update({"User-Agent": "Mozilla/5.0"})
-
-# Extract all paragraph text
-extractor = ElementExtractor(session, "p")
-paragraphs = extractor.scrape("https://example.com")
-
-# Extract all links
-link_extractor = LinkExtractor(session)
-links = link_extractor.scrape("https://example.com")
-
-# Generate sitemap
-sitemap_generator = SitemapGenerator()
-sitemap_generator.generate(links, "sitemap.xml")
+python main.py
 ```
 
 ## 🔧 Configuration
@@ -130,18 +97,6 @@ session.headers.update({"User-Agent": "Your Custom User-Agent"})
 - [ ] **Performance Metrics** - Speed and efficiency tracking
 - [x] **Data Visualization** - Charts and graphs for extracted data
 
-## 📊 File Structure
-
-```
-web-scraper/
-├── web-scraper.py          # Main scraper implementation
-├── README.md              # This file
-├── requirements.txt       # Python dependencies
-└── examples/              # Usage examples (planned)
-    ├── basic_usage.py
-    ├── advanced_features.py
-    └── batch_processing.py
-```
 
 ## 🤝 Contributing
 
@@ -164,10 +119,10 @@ web-scraper/
 
 ### **Getting Started with Development**
 ```bash
-git clone https://github.com/yourusername/web-scraper.git
+git clone https://github.com/OsemaFadhel/web-scraper.git
 cd web-scraper
-pip install beautifulsoup4 requests
-python web-scraper.py
+pip install -r requirements.txt
+python main.py
 ```
 
 ### **Code Style**

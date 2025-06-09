@@ -32,7 +32,7 @@ Python web scraper for extracting data from web pages.
 
 2. **Install dependencies:**
    ```bash
-   pip install beautifulsoup4 requests
+   pip install -r requirements.txt
    ```
 
 3. **Run the scraper:**

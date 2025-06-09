@@ -21,9 +21,11 @@ header = (
 )
 
 options = (
-	bcolors.OKBLUE + "1. Extract elements by CSS selector\n"
+	bcolors.OKCYAN + "1. Extract elements by CSS selector\n"
 	+ bcolors.OKCYAN + "2. Extract all links from a page\n"
-	+ bcolors.OKGREEN + "3. Extract emails from a page\n"
+	+ bcolors.OKCYAN + "3. Extract emails from a page\n"
+	+ bcolors.OKCYAN + "4. Extract all images from a page\n"
+	+ bcolors.OKCYAN + "5. Generate sitemap from links\n"
 	+ bcolors.WARNING + "q. Quit\n"
 	+ bcolors.ENDC
 )
@@ -131,6 +133,21 @@ class WebScraper:
 		except IOError as e:
 			print(f"Error saving sitemap: {e}")
 
+	def extract_images(self, url):
+		try:
+			soup = self.fetch_and_parse(url)
+			if soup is None:
+				return []
+
+			images = soup.find_all('img', src=True)
+			for img in images:
+				img['src'] = requests.compat.urljoin(url, img['src'])
+			print(f"Found {len(images)} images on the page.")
+			return [img['src'] for img in images]
+		except Exception as e:
+			print(f"Error extracting images: {e}")
+			return []
+
 	def save_to_json(self, data, filename):
 		try:
 			with open(filename, 'w', encoding='utf-8') as f:
@@ -193,19 +210,32 @@ class WebScraper:
 		else:
 			print("No links found or an error occurred.")
 
+	def handle_extract_images(self):
+		url = input(url_input).strip()
+		images = self.extract_images(url)
+		if images:
+			print(f"Extracted {len(images)} images:")
+			for img in images:
+				print(img)
+			self.choice_save(images)
+		else:
+			print("No images found or an error occurred.")
+
 	def run(self):
 		print(header)
 
 		choice_actions = {
 			'1': self.handle_extract_elements,
 			'2': self.handle_extract_links,
-			'3': self.handle_extract_emails
+			'3': self.handle_extract_emails,
+			'4': self.handle_extract_images,
+			'5': self.handle_generate_sitemap,
 		}
 
 		while True:
 			print(options)
 			try:
-				choice = input(bcolors.OKGREEN + "Choose an option (1 or 2, or 'q' to quit): " + bcolors.ENDC).strip()
+				choice = input(bcolors.OKGREEN + "Choose an option (1 - 4, or 'q' to quit): " + bcolors.ENDC).strip()
 				if choice.lower() == 'q':
 					print("Exiting the scraper. Goodbye!")
 					sys.exit(0)

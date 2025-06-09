@@ -1,0 +1,15 @@
+beautifulsoup4
+requests
+
+# Database dependencies
+sqlalchemy>=1.4.0
+psycopg2-binary  # PostgreSQL adapter
+PyMySQL  # MySQL adapter
+python-dotenv  # Environment variable management
+
+# Data Visualization dependencies
+matplotlib>=3.5.0
+seaborn>=0.12.0
+plotly>=5.0.0
+pandas>=1.5.0
+numpy>=1.21.0

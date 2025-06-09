@@ -1,6 +1,6 @@
 # Web Scraper
 
-A simple yet powerful Python web scraper for extracting data from web pages.
+A modular and extensible Python web scraper for extracting data from web pages using the Strategy Design Pattern.
 
 ![Python](https://img.shields.io/badge/python-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
@@ -11,12 +11,12 @@ A simple yet powerful Python web scraper for extracting data from web pages.
 ### **Current Features**
 - **CSS Selector Extraction**: Extract specific elements using CSS selectors
 - **Link Extraction**: Extract all links from web pages with automatic URL resolution
+- **Sitemap Generation**: Generate XML sitemaps from crawled links
 - **Session Management**: Persistent HTTP sessions with custom User-Agent
-- **JSON Export**: Save extracted data to JSON format
 - **Error Handling**: Robust error handling for network and parsing issues
-- **Colored Output**: Beautiful terminal output with color-coded messages
 
 ### **Built-in Capabilities**
+- Modular design with the Strategy Design Pattern
 - Automatic relative URL resolution
 - HTTP error handling with proper status codes
 - HTML parsing with BeautifulSoup4
@@ -58,40 +58,43 @@ python web-scraper.py
 **Available Options:**
 1. **Extract elements by CSS selector** - Target specific HTML elements
 2. **Extract all links from a page** - Get all hyperlinks with resolved URLs
+3. **Generate sitemap** - Create an XML sitemap from extracted links
 
 ### **Basic Examples**
 
 ```python
-from web_scraper import WebScraper
+from web_scraper import ElementExtractor, LinkExtractor, SitemapGenerator
+import requests
 
-scraper = WebScraper()
+session = requests.Session()
+session.headers.update({"User-Agent": "Mozilla/5.0"})
 
 # Extract all paragraph text
-paragraphs = scraper.extract_elements("https://example.com", "p")
+extractor = ElementExtractor(session, "p")
+paragraphs = extractor.scrape("https://example.com")
 
 # Extract all links
-links = scraper.extract_links("https://example.com")
+link_extractor = LinkExtractor(session)
+links = link_extractor.scrape("https://example.com")
 
-# Save data to JSON
-scraper.save_to_json(links, "extracted_links.json")
+# Generate sitemap
+sitemap_generator = SitemapGenerator()
+sitemap_generator.generate(links, "sitemap.xml")
 ```
 
 ## 🔧 Configuration
 
-The scraper uses a default User-Agent string that can be customized in the [`WebScraper`](web-scraper.py) class:
+The scraper uses a default User-Agent string that can be customized in the session headers:
 
 ```python
-"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+session.headers.update({"User-Agent": "Your Custom User-Agent"})
 ```
 
 ## 🚀 Planned Features
 
 ### **High Priority**
-- [x] **Email Address Extraction** - Extract email addresses from web pages
-- [x] **Image URL Extraction** - Download and extract image URLs
 - [ ] **Table Data Extraction** - Parse HTML tables into structured data
 - [ ] **Form Detection** - Identify and analyze web forms
-- [x] **Sitemap Generation** - Generate sitemaps from crawled links
 
 ### **Enhanced Functionality**
 - [ ] **Multi-threading** - Concurrent page processing for faster scraping
@@ -103,7 +106,7 @@ The scraper uses a default User-Agent string that can be customized in the [`Web
 ### **Data Processing**
 - [ ] **CSV Export** - Export data to CSV format
 - [ ] **XML Export** - Export data to XML format
-- [ ] **Database Integration** - Save data directly to databases (SQLite, MySQL, PostgreSQL)
+- [x] **Database Integration** - Save data directly to databases (SQLite, MySQL, PostgreSQL)
 - [ ] **Data Validation** - Validate extracted data integrity
 - [ ] **Duplicate Removal** - Automatic deduplication of extracted data
 
@@ -125,7 +128,7 @@ The scraper uses a default User-Agent string that can be customized in the [`Web
 - [ ] **Statistics Dashboard** - Scraping statistics and analytics
 - [ ] **Error Reporting** - Detailed error logs and reporting
 - [ ] **Performance Metrics** - Speed and efficiency tracking
-- [ ] **Data Visualization** - Charts and graphs for extracted data
+- [x] **Data Visualization** - Charts and graphs for extracted data
 
 ## 📊 File Structure
 

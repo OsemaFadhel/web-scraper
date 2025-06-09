@@ -1,6 +1,6 @@
 # Web Scraper
 
-A modular and extensible Python web scraper for extracting data from web pages.
+Python web scraper for extracting data from web pages.
 
 ![Python](https://img.shields.io/badge/python-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
